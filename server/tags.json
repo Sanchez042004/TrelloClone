@@ -1,0 +1,27 @@
+[
+  {
+    "id": 3,
+    "name": "Diseño",
+    "color": "bg-[#b35b00]"
+  },
+  {
+    "id": 4,
+    "name": "Investigación",
+    "color": "bg-[#b33529]"
+  },
+  {
+    "id": 6,
+    "name": "Legal",
+    "color": "bg-[#0055cc]"
+  },
+  {
+    "id": 11,
+    "name": "Ingeniería de Sistemas",
+    "color": "bg-[#e77c7c]"
+  },
+  {
+    "id": 1,
+    "name": "Test",
+    "color": "bg-[#21855a]"
+  }
+]
