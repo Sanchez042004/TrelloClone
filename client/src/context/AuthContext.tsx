@@ -82,6 +82,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem('user');
         setUser(null);
         setGuestId(null);
+
+        // Immediately request a new guest session after logout
+        try {
+            const guestRes = await getGuestSession();
+            if (guestRes?.data?.guestId) {
+                setGuestId(guestRes.data.guestId);
+            }
+        } catch (err) {
+            console.error("Failed to restore guest session after logout", err);
+        }
     };
 
     return (
