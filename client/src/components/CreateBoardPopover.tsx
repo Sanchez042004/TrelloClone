@@ -23,8 +23,6 @@ export default function CreateBoardPopover({ onClose, onCreate, loading }: Creat
     const [title, setTitle] = useState('');
     const [selectedBackground, setSelectedBackground] = useState(BACKGROUNDS[0]);
     const [isDirty, setIsDirty] = useState(false);
-    const [visibility, setVisibility] = useState<'privado' | 'espacio'>('privado');
-    const [isVisibilityOpen, setIsVisibilityOpen] = useState(false);
     const popoverRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 

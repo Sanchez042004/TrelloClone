@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { getBoards, createBoard, deleteBoard } from '../services/api';
 import Skeleton from '../components/ui/Skeleton';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 import Sidebar from '../components/Sidebar';
 import CreateBoardPopover from '../components/CreateBoardPopover';
