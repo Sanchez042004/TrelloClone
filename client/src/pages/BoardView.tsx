@@ -284,7 +284,13 @@ export default function BoardView() {
             {editingCard && (
                 <CardModal
                     card={editingCard} listTitle={lists.find(l => l.id === editingCard.list_id)?.title || 'Lista'}
-                    onClose={async (updatedData) => { if (updatedData) await updateCard(editingCard.id, updatedData); setEditingCard(null); }}
+                    onClose={(updatedData) => {
+                        // Optimistic close: Close immediately and update in background
+                        if (updatedData) {
+                            updateCard(editingCard.id, updatedData);
+                        }
+                        setEditingCard(null);
+                    }}
                 />
             )}
 
