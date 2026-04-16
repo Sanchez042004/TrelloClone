@@ -1,3 +1,8 @@
+import { useState, useRef, useEffect, memo } from 'react';
+import { createPortal } from 'react-dom';
+import { Droppable } from '@hello-pangea/dnd';
+import type { List, Card } from '../../types';
+import BoardCard, { BoardCardContent } from './BoardCard';
 import LoadingSpinner from '../ui/LoadingSpinner';
 
 interface BoardListProps {
