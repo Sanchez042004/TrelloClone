@@ -7,7 +7,6 @@ import CardModal from '../components/board/CardModal';
 import QuickEditOverlay from '../components/board/QuickEditOverlay';
 import TopNav from '../components/TopNav';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
-import Skeleton from '../components/ui/Skeleton';
 import type { Card } from '../types';
 
 export default function BoardView() {
@@ -18,6 +17,7 @@ export default function BoardView() {
         setLists,
         loading,
         isCreatingList,
+        isCreatingCard,
         boardBackground,
         boardTitle,
         refreshLists,
@@ -285,6 +285,27 @@ export default function BoardView() {
                 <CardModal
                     card={editingCard} listTitle={lists.find(l => l.id === editingCard.list_id)?.title || 'Lista'}
                     onClose={async (updatedData) => { if (updatedData) await updateCard(editingCard.id, updatedData); setEditingCard(null); }}
+                />
+            )}
+
+            {quickEditingCard && (
+                <QuickEditOverlay
+                    card={quickEditingCard.card}
+                    rect={quickEditingCard.rect}
+                    onClose={() => setQuickEditingCard(null)}
+                    onSave={async (cardId, newTitle) => {
+                        await updateCard(cardId, { title: newTitle });
+                        setQuickEditingCard(null);
+                    }}
+                    onDelete={async (cardId) => {
+                        await deleteCard(cardId);
+                        setQuickEditingCard(null);
+                    }}
+                    onOpenCard={(cardId) => {
+                        const cardToOpen = lists.flatMap(l => l.cards).find(c => c.id === cardId);
+                        if (cardToOpen) setEditingCard(cardToOpen);
+                        setQuickEditingCard(null);
+                    }}
                 />
             )}
         </div>

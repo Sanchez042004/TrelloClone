@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, AuthContext } from './context/AuthContext';
 import { TagProvider } from './context/TagContext';
 import Dashboard from './pages/Dashboard';
 import BoardView from './pages/BoardView';
@@ -8,7 +8,6 @@ import Register from './pages/Register';
 import './index.css';
 
 import { useContext } from 'react';
-import { AuthContext, AuthProvider } from './context/AuthContext';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 function AppContent() {
