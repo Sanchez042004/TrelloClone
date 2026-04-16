@@ -36,7 +36,8 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const { user, token } = await authService.login(req.body);
+        const guestId = req.guest?.id;
+        const { user, token } = await authService.login({ ...req.body, guestId });
 
         res.cookie('token', token, {
             httpOnly: true,
@@ -44,6 +45,14 @@ const login = async (req, res) => {
             sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
             maxAge: 3600000 // 1 hour
         });
+
+        if (guestId) {
+            res.clearCookie('guest_token', {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+            });
+        }
 
         res.json({ user: { id: user.id, email: user.email } });
     } catch (err) {

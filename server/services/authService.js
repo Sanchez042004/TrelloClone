@@ -40,7 +40,7 @@ const register = async ({ email, password, guestId }) => {
     return { user: newUser, token };
 };
 
-const login = async ({ email, password }) => {
+const login = async ({ email, password, guestId }) => {
     const user = await prisma.users.findUnique({
         where: { email }
     });
@@ -53,6 +53,20 @@ const login = async ({ email, password }) => {
 
     if (!validPassword) {
         throw new Error('Password or Email is incorrect');
+    }
+
+    // Migrate guest data if guestId provided during login
+    if (guestId) {
+        await prisma.boards.updateMany({
+            where: {
+                guest_id: guestId,
+                user_id: null
+            },
+            data: {
+                user_id: user.id,
+                guest_id: null
+            }
+        });
     }
 
     const token = jwtGenerator(user.id);

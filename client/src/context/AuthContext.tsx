@@ -70,6 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // We don't store token in localStorage anymore
         localStorage.setItem('user', JSON.stringify(newUser));
         setUser(newUser);
+        setGuestId(null);
     };
 
     const logout = async () => {
