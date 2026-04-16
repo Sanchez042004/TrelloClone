@@ -2,17 +2,20 @@ import { useContext, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { login } from '../services/api';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const { setAuth } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setIsLoading(true);
 
         try {
             const response = await login(email, password);
@@ -20,6 +23,7 @@ export default function Login() {
             navigate('/');
         } catch (err: any) {
             setError(err.response?.data || 'Error al iniciar sesión');
+            setIsLoading(false);
         }
     };
 
@@ -83,8 +87,19 @@ export default function Login() {
                         </div>
 
                         {/* Login Button */}
-                        <button className="w-full h-10 bg-[#0052CC] hover:bg-[#0747a6] text-white font-bold rounded-[3px] transition-colors" type="submit">
-                            Iniciar sesión
+                        <button 
+                            disabled={isLoading}
+                            className={`w-full h-10 bg-[#0052CC] hover:bg-[#0747a6] text-white font-bold rounded-[3px] transition-all flex items-center justify-center gap-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`} 
+                            type="submit"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <LoadingSpinner size="sm" color="text-white" />
+                                    <span>Iniciando sesión...</span>
+                                </>
+                            ) : (
+                                'Iniciar sesión'
+                            )}
                         </button>
                     </form>
 

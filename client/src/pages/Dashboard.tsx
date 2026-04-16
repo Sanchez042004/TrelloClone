@@ -2,6 +2,8 @@ import { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { getBoards, createBoard, deleteBoard } from '../services/api';
+import Skeleton from '../components/ui/Skeleton';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 import Sidebar from '../components/Sidebar';
 import CreateBoardPopover from '../components/CreateBoardPopover';
@@ -29,17 +31,20 @@ const getBgClass = (background?: string, index: number = 0) => {
 };
 
 export default function Dashboard() {
-    const { user, guestId, isAuthenticated } = useContext(AuthContext);
+    const { user, guestId, isAuthenticated, loading: authLoading } = useContext(AuthContext);
     const [boards, setBoards] = useState<Board[]>([]);
     const [isCreating, setIsCreating] = useState(false);
+    const [isCreatingBoard, setIsCreatingBoard] = useState(false);
     const [boardToDelete, setBoardToDelete] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchBoards();
-    }, [user, guestId]);
+        if (!authLoading) {
+            fetchBoards();
+        }
+    }, [user, guestId, authLoading]);
 
     const fetchBoards = async (silent = false) => {
         try {
@@ -55,11 +60,14 @@ export default function Dashboard() {
 
     const handleCreateBoard = async (title: string, background: string) => {
         try {
+            setIsCreatingBoard(true);
             await createBoard(title, background);
             setIsCreating(false);
             fetchBoards(true);
         } catch (error) {
             console.error('Error creating board:', error);
+        } finally {
+            setIsCreatingBoard(false);
         }
     };
 
@@ -164,6 +172,7 @@ export default function Dashboard() {
                                 <div className="absolute top-0 left-full ml-2 z-50">
                                     <CreateBoardPopover
                                         onClose={() => setIsCreating(false)}
+                                        loading={isCreatingBoard}
                                         onCreate={(title, background) => {
                                             handleCreateBoard(title, background);
                                         }}
@@ -174,8 +183,8 @@ export default function Dashboard() {
 
                         {/* Board Cards */}
                         {loading ? (
-                            [...Array(3)].map((_, i) => (
-                                <div key={i} className="h-[148px] rounded bg-card-dark animate-pulse border border-[#3e474f]"></div>
+                            [...Array(4)].map((_, i) => (
+                                <Skeleton key={i} className="h-[148px] rounded-[14px]" />
                             ))
                         ) : (
                             boards.map((board, index) => (

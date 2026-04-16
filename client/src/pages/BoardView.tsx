@@ -6,6 +6,8 @@ import BoardList from '../components/board/BoardList';
 import CardModal from '../components/board/CardModal';
 import QuickEditOverlay from '../components/board/QuickEditOverlay';
 import TopNav from '../components/TopNav';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
+import Skeleton from '../components/ui/Skeleton';
 import type { Card } from '../types';
 
 export default function BoardView() {
@@ -15,6 +17,7 @@ export default function BoardView() {
         lists,
         setLists,
         loading,
+        isCreatingList,
         boardBackground,
         boardTitle,
         refreshLists,
@@ -40,10 +43,8 @@ export default function BoardView() {
     const [searchQuery, setSearchQuery] = useState('');
     const addListContainerRef = useRef<HTMLDivElement>(null);
 
-    // Keyboard shortcut: track hovered card + its DOM element
     const hoveredCardRef = useRef<{ card: Card; element: HTMLElement } | null>(null);
 
-    // Click away for Add List
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (addListContainerRef.current && !addListContainerRef.current.contains(event.target as Node)) {
@@ -59,7 +60,6 @@ export default function BoardView() {
         };
     }, [isAddingList]);
 
-    // Initial Data Fetch
     useEffect(() => {
         if (boardId) {
             refreshLists();
@@ -67,14 +67,12 @@ export default function BoardView() {
         }
     }, [boardId, refreshLists, fetchBoardData]);
 
-    // Handle deep linking for cards
     useEffect(() => {
         const cardId = searchParams.get('cardId');
         if (cardId && lists.length > 0) {
             const card = lists.flatMap(l => l.cards).find(c => c.id === Number(cardId));
             if (card && (!editingCard || editingCard.id !== card.id)) {
                 setEditingCard(card);
-                // Clear the param after opening to avoid re-opening on every render
                 const params = new URLSearchParams(searchParams);
                 params.delete('cardId');
                 setSearchParams(params, { replace: true });
@@ -89,16 +87,14 @@ export default function BoardView() {
         setIsEditingTitle(false);
     };
 
-
-    const handleCreateList = () => {
+    const handleCreateList = async () => {
         if (newListTitle.trim()) {
-            createList(newListTitle);
+            await createList(newListTitle);
             setNewListTitle('');
             setIsAddingList(false);
         }
     };
 
-    // Opens quick edit given a card and its DOM element (no MouseEvent needed)
     const openQuickEditForElement = useCallback((card: Card, element: HTMLElement) => {
         const glassCard = element.closest('.glass-card') as HTMLElement | null;
         const target = glassCard || element;
@@ -131,12 +127,9 @@ export default function BoardView() {
         hoveredCardRef.current = null;
     }, []);
 
-    // Global "E" keyboard shortcut to open quick edit on hovered card
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key !== 'e' && e.key !== 'E') return;
-
-            // Don't trigger while typing in an input, textarea, or contentEditable
             const active = document.activeElement;
             if (active) {
                 const tag = active.tagName.toLowerCase();
@@ -144,17 +137,12 @@ export default function BoardView() {
                     return;
                 }
             }
-
-            // Don't trigger if a modal/overlay is already open
             if (editingCard || quickEditingCard) return;
-
             const hovered = hoveredCardRef.current;
             if (!hovered) return;
-
             e.preventDefault();
             openQuickEditForElement(hovered.card, hovered.element);
         };
-
         document.addEventListener('keydown', handleKeyDown);
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [editingCard, quickEditingCard, openQuickEditForElement]);
@@ -168,22 +156,14 @@ export default function BoardView() {
         setIsGlobalDragging(false);
         document.body.classList.remove('is-dragging-card');
         const { destination, source, draggableId } = result;
-
-        // Si no hay destino (drag cancelado)
         if (!destination) return;
-
-        // Si no cambió nada
-        if (destination.droppableId === source.droppableId && destination.index === source.index) {
-            return;
-        }
+        if (destination.droppableId === source.droppableId && destination.index === source.index) return;
 
         const sourceListId = Number(source.droppableId);
         const destListId = Number(destination.droppableId);
         const cardId = Number(draggableId);
 
-        // Update local state avoiding direct mutation to prevent re-render issues
         const newLists = lists.map(list => {
-            // Shallow clone the cards array for the lists we are going to modify
             if (list.id === sourceListId || list.id === destListId) {
                 return { ...list, cards: [...list.cards] };
             }
@@ -192,112 +172,64 @@ export default function BoardView() {
 
         const sourceList = newLists.find(l => l.id === sourceListId);
         const destList = newLists.find(l => l.id === destListId);
-
         if (!sourceList || !destList) return;
 
-        // Remover la tarjeta de la lista origen
         const [movedCard] = sourceList.cards.splice(source.index, 1);
-
-        // Caso 1: Misma lista
         if (sourceListId === destListId) {
             sourceList.cards.splice(destination.index, 0, movedCard);
         } else {
-            // Caso 2: Diferente lista
             movedCard.list_id = destListId;
             destList.cards.splice(destination.index, 0, movedCard);
         }
-
-        // Actualizar estado local inmediatamente (optimistic update)
         setLists(newLists);
-
-        // Calcular nueva posición
-        const newPosition = destination.index;
-
-        // Sincronizar con backend
-        moveCard(cardId, destListId, newPosition);
+        moveCard(cardId, destListId, destination.index);
     }, [lists, setLists, moveCard]);
 
     const getBackgroundProps = () => {
         if (!boardBackground) return { className: 'bg-background-dark' };
-
-        if (boardBackground.startsWith('from-')) {
-            return { className: `bg-gradient-to-br ${boardBackground}` };
-        }
-        if (boardBackground.startsWith('bg-')) {
-            return { className: boardBackground };
-        }
+        if (boardBackground.startsWith('from-')) return { className: `bg-gradient-to-br ${boardBackground}` };
+        if (boardBackground.startsWith('bg-')) return { className: boardBackground };
         if (boardBackground.startsWith('http') || boardBackground.startsWith('url')) {
             return {
                 className: 'board-bg',
                 style: { backgroundImage: boardBackground.startsWith('url') ? boardBackground : `url(${boardBackground})` }
             };
         }
-        // Fallback for hex/rgb
         return { style: { backgroundColor: boardBackground } };
     };
 
     const bgProps = getBackgroundProps();
 
     if (loading && lists.length === 0) {
-        return <div className="h-screen w-full flex items-center justify-center bg-background-dark text-white">Cargando tablero...</div>;
+        return (
+            <div className="h-screen w-full flex flex-col items-center justify-center bg-background-dark text-white font-sans">
+                <LoadingSpinner size="lg" color="text-trello-blue" />
+                <p className="mt-4 text-text-muted animate-pulse font-medium">Cargando tablero...</p>
+            </div>
+        );
     }
 
     return (
-        <div
-            className={`flex flex-col h-screen text-text-main ${bgProps.className || ''}`}
-            style={bgProps.style}
-        >
+        <div className={`flex flex-col h-screen text-text-main ${bgProps.className || ''}`} style={bgProps.style}>
             <TopNav 
-                searchValue={searchQuery} 
-                onSearchChange={setSearchQuery}
-                hasResults={lists.some(l => l.cards.some(c => {
-                    const query = searchQuery.toLowerCase();
-                    return c.title.toLowerCase().split(/\s+/).some(word => word.startsWith(query));
-                }))}
-                results={lists.flatMap(l => 
-                    l.cards
-                        .filter(c => {
-                            const query = searchQuery.toLowerCase();
-                            return c.title.toLowerCase().split(/\s+/).some(word => word.startsWith(query));
-                        })
-                        .map(c => ({
-                            id: c.id,
-                            title: c.title,
-                            subtitle: `${boardTitle}: ${l.title}`,
-                            type: 'card' as const,
-                            boardId: Number(boardId)
-                        }))
-                )}
-                placeholder="Buscar tarjetas"
+                searchValue={searchQuery} onSearchChange={setSearchQuery}
+                hasResults={lists.some(l => l.cards.some(c => c.title.toLowerCase().startsWith(searchQuery.toLowerCase())))}
+                results={[]} placeholder="Buscar tarjetas"
             />
 
             <header className="glass-nav border-b border-white/10 px-4 h-12 flex items-center justify-between text-white shrink-0">
                 <div className="flex items-center gap-3">
                     {isEditingTitle ? (
                         <input
-                            autoFocus
-                            className="text-lg font-bold px-2 py-1 rounded bg-[#1d2125] border-2 border-primary outline-none"
-                            value={tempTitle}
-                            onChange={(e) => setTempTitle(e.target.value)}
-                            onBlur={handleTitleSubmit}
-                            onKeyDown={(e) => e.key === 'Enter' && handleTitleSubmit()}
+                            autoFocus className="text-lg font-bold px-2 py-1 rounded bg-[#1d2125] border-2 border-primary outline-none"
+                            value={tempTitle} onChange={(e) => setTempTitle(e.target.value)}
+                            onBlur={handleTitleSubmit} onKeyDown={(e) => e.key === 'Enter' && handleTitleSubmit()}
                         />
                     ) : (
-                        <h1
-                            onClick={() => {
-                                setTempTitle(boardTitle);
-                                setIsEditingTitle(true);
-                            }}
-                            className="text-lg font-bold px-2 py-1 rounded hover:bg-white/20 cursor-pointer transition-colors"
-                        >
+                        <h1 onClick={() => { setTempTitle(boardTitle); setIsEditingTitle(true); }} className="text-lg font-bold px-2 py-1 rounded hover:bg-white/20 cursor-pointer transition-colors">
                             {boardTitle || 'Cargando...'}
                         </h1>
                     )}
-                </div>
-                <div className="flex items-center gap-2">
-                    <button className="p-1.5 rounded hover:bg-white/20 transition-colors">
-                        <span className="material-symbols-outlined text-lg">more_horiz</span>
-                    </button>
                 </div>
             </header>
 
@@ -306,44 +238,32 @@ export default function BoardView() {
                     <div className="flex items-start gap-4 h-full">
                         {lists.map((list) => (
                             <BoardList
-                                key={list.id}
-                                list={list}
-                                onDeleteList={deleteList}
-                                onUpdateTitle={updateListTitle}
-                                onCreateCard={createCard}
-                                onEditCard={handleEditCard}
-                                onQuickEditCard={handleStartQuickEdit}
-                                onHoverCard={handleHoverCard}
-                                onLeaveCard={handleLeaveCard}
-                                isGlobalDragging={isGlobalDragging}
+                                key={list.id} list={list} onDeleteList={deleteList} onUpdateTitle={updateListTitle}
+                                onCreateCard={createCard} onEditCard={handleEditCard} onQuickEditCard={handleStartQuickEdit}
+                                onHoverCard={handleHoverCard} onLeaveCard={handleLeaveCard} isGlobalDragging={isGlobalDragging}
+                                isCreatingCard={isCreatingCard}
                             />
                         ))}
 
                         <div className="w-64 shrink-0">
                             {isAddingList ? (
-                                <div
-                                    ref={addListContainerRef}
-                                    className="bg-[#101204] p-2 rounded-xl border border-white/10 animate-in fade-in zoom-in-95 duration-200 shadow-2xl"
-                                >
-                                    <input
-                                        autoFocus
-                                        className="w-full bg-[#22272b] text-white text-[14px] border border-[#579dff] rounded-[3px] p-2 py-1.5 mb-2 outline-none placeholder:text-[#9facbd]"
+                                <div ref={addListContainerRef} className="bg-[#101204] p-2 rounded-xl border border-white/10">
+                                    <input 
+                                        autoFocus className="w-full bg-[#22272b] text-white text-[14px] border border-[#579dff] rounded-[3px] p-2 py-1.5 mb-2 outline-none"
                                         placeholder="Introduce el nombre de la lista..."
-                                        value={newListTitle}
-                                        onChange={(e) => setNewListTitle(e.target.value)}
+                                        value={newListTitle} onChange={(e) => setNewListTitle(e.target.value)}
                                         onKeyDown={(e) => e.key === 'Enter' && handleCreateList()}
+                                        disabled={isCreatingList}
                                     />
                                     <div className="flex items-center gap-2">
                                         <button
-                                            onClick={handleCreateList}
-                                            className="bg-[#579dff] hover:bg-[#85b8ff] text-[#172b4d] text-[14px] font-semibold px-3 py-1.5 rounded-[3px] transition-colors"
+                                            onClick={handleCreateList} disabled={isCreatingList}
+                                            className="bg-[#579dff] hover:bg-[#85b8ff] text-[#172b4d] text-[14px] font-semibold px-3 py-1.5 rounded-[3px] disabled:opacity-50 flex items-center gap-2"
                                         >
-                                            Añadir lista
+                                            {isCreatingList && <LoadingSpinner size="sm" color="text-[#172b4d]" />}
+                                            {isCreatingList ? 'Añadiendo...' : 'Añadir lista'}
                                         </button>
-                                        <button
-                                            onClick={() => setIsAddingList(false)}
-                                            className="p-1.5 text-white/70 hover:text-white transition-colors"
-                                        >
+                                        <button onClick={() => setIsAddingList(false)} disabled={isCreatingList} className="p-1.5 text-white/70 hover:text-white">
                                             <span className="material-symbols-outlined text-[20px]">close</span>
                                         </button>
                                     </div>
@@ -353,8 +273,7 @@ export default function BoardView() {
                                     onClick={() => setIsAddingList(true)}
                                     className="w-64 bg-white/20 hover:bg-white/30 transition-colors text-white shrink-0 rounded-xl p-3 flex items-center gap-2 text-sm font-medium"
                                 >
-                                    <span className="material-symbols-outlined text-sm">add</span>
-                                    Añade otra lista
+                                    <span className="material-symbols-outlined text-sm">add</span> Añade otra lista
                                 </button>
                             )}
                         </div>
@@ -364,31 +283,8 @@ export default function BoardView() {
 
             {editingCard && (
                 <CardModal
-                    card={editingCard}
-                    listTitle={lists.find(l => l.id === editingCard.list_id)?.title || 'Lista'}
-                    onClose={async (updatedData) => {
-                        if (updatedData) {
-                            await updateCard(editingCard.id, updatedData);
-                        }
-                        setEditingCard(null);
-                    }}
-                />
-            )}
-
-            {quickEditingCard && (
-                <QuickEditOverlay
-                    card={quickEditingCard.card}
-                    rect={quickEditingCard.rect}
-                    onClose={() => setQuickEditingCard(null)}
-                    onSave={(cardId, title) => updateCard(cardId, { title })}
-                    onDelete={deleteCard}
-                    onOpenCard={(cardId) => {
-                        const card = lists.flatMap(l => l.cards).find(c => c.id === cardId);
-                        if (card) {
-                            setQuickEditingCard(null);
-                            setEditingCard(card);
-                        }
-                    }}
+                    card={editingCard} listTitle={lists.find(l => l.id === editingCard.list_id)?.title || 'Lista'}
+                    onClose={async (updatedData) => { if (updatedData) await updateCard(editingCard.id, updatedData); setEditingCard(null); }}
                 />
             )}
         </div>

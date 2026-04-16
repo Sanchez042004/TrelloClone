@@ -1,8 +1,4 @@
-import { useState, useRef, useEffect, memo } from 'react';
-import { createPortal } from 'react-dom';
-import { Droppable } from '@hello-pangea/dnd';
-import type { List, Card } from '../../types';
-import BoardCard, { BoardCardContent } from './BoardCard';
+import LoadingSpinner from '../ui/LoadingSpinner';
 
 interface BoardListProps {
     list: List;
@@ -14,6 +10,7 @@ interface BoardListProps {
     onHoverCard: (e: React.MouseEvent, card: Card) => void;
     onLeaveCard: () => void;
     isGlobalDragging: boolean;
+    isCreatingCard?: boolean;
 }
 
 export default memo(function BoardList({
@@ -25,7 +22,8 @@ export default memo(function BoardList({
     onQuickEditCard,
     onHoverCard,
     onLeaveCard,
-    isGlobalDragging
+    isGlobalDragging,
+    isCreatingCard
 }: BoardListProps) {
     const [isAddingCard, setIsAddingCard] = useState(false);
     const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -284,20 +282,24 @@ export default memo(function BoardList({
                             value={newCardTitle}
                             onChange={(e) => setNewCardTitle(e.target.value)}
                             onKeyDown={handleKeyDown}
+                            disabled={isCreatingCard}
                             placeholder="Introduce un título o pega un enlace"
-                            className="w-full bg-[#22272b] text-white rounded-[3px] border border-[#579dff] text-[14px] p-2 py-1.5 placeholder:text-[#9facbd] outline-none shadow-sm resize-none"
+                            className="w-full bg-[#22272b] text-white rounded-[3px] border border-[#579dff] text-[14px] p-2 py-1.5 placeholder:text-[#9facbd] outline-none shadow-sm resize-none disabled:opacity-50"
                             rows={3}
                         />
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={handleAddCard}
-                                className="bg-[#579dff] hover:bg-[#85b8ff] text-[#172b4d] text-[14px] font-semibold px-3 py-1.5 rounded-[3px] transition-colors"
+                                disabled={isCreatingCard || !newCardTitle.trim()}
+                                className="bg-[#579dff] hover:bg-[#85b8ff] text-[#172b4d] text-[14px] font-semibold px-3 py-1.5 rounded-[3px] transition-colors disabled:opacity-50 flex items-center gap-2"
                             >
-                                Añadir tarjeta
+                                {isCreatingCard && <LoadingSpinner size="sm" color="text-[#172b4d]" />}
+                                {isCreatingCard ? 'Añadiendo...' : 'Añadir tarjeta'}
                             </button>
                             <button
                                 onClick={() => setIsAddingCard(false)}
-                                className="p-1.5 text-white/70 hover:text-white transition-colors"
+                                disabled={isCreatingCard}
+                                className="p-1.5 text-white/70 hover:text-white transition-colors disabled:opacity-30"
                             >
                                 <span className="material-symbols-outlined text-[20px]">close</span>
                             </button>

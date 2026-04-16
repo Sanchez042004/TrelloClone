@@ -35,60 +35,35 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [guestId, setGuestId] = useState<string | null>(null);
 
     useEffect(() => {
-        const checkAuth = async () => {
+        const initialize = async () => {
             try {
-                // Try to verify session (cookie)
-                // We expect the verify endpoint to return user data or successful status
-                // The current controller returns 'true' which is valid JSON
-                // Ideally it should return the user object.
-                // Let's assume for now valid session means we are logged in.
+                // parallel checks
+                const [authRes, guestRes] = await Promise.all([
+                    verifyToken().catch(() => null),
+                    getGuestSession().catch(() => null)
+                ]);
 
-                // wait, verify controller currently just returns true. 
-                // We don't get the user object back on refresh!
-                // We should fix verify controller to return user.
+                if (authRes) {
+                    const storedUser = localStorage.getItem('user');
+                    if (storedUser) {
+                        setUser(JSON.parse(storedUser));
+                    }
+                } else {
+                    localStorage.removeItem('user');
+                    setUser(null);
+                }
 
-                // For now, let's keep the logic simple: if verify succeeds, we are good. 
-                // But we lost the user info if we don't persist it or fetch it.
-                // The original code stored user in localStorage. We can keep user in localStorage for UI purposes
-                // but NOT the token.
-
-                await verifyToken();
-
-                const storedUser = localStorage.getItem('user');
-                if (storedUser) {
-                    setUser(JSON.parse(storedUser));
+                if (guestRes?.data?.guestId) {
+                    setGuestId(guestRes.data.guestId);
                 }
             } catch (err) {
-                // If verify fails, clear user
-                localStorage.removeItem('user');
-                setUser(null);
+                console.error("Initialization error", err);
             } finally {
                 setLoading(false);
             }
         };
 
-        checkAuth();
-
-        // Guest ID logic via HTTP-only cookie endpoint
-        const initGuestSession = async () => {
-            try {
-                // If we aren't loading and don't have a user, ensure we have a guest session cookie
-                const storedUser = localStorage.getItem('user');
-                if (!storedUser) {
-                    const res = await getGuestSession();
-                    if (res.data?.guestId) {
-                        setGuestId(res.data.guestId);
-                    }
-                } else {
-                    setGuestId(null);
-                }
-            } catch (err) {
-                console.error("Could not initialize guest session", err);
-            }
-        };
-
-        // Run both checks
-        checkAuth().then(() => initGuestSession());
+        initialize();
     }, []);
 
     const setAuth = (newUser: User) => {

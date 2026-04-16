@@ -16,6 +16,8 @@ import {
 export const useBoardData = (boardId: number | string) => {
     const [lists, setLists] = useState<List[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isCreatingList, setIsCreatingList] = useState(false);
+    const [isCreatingCard, setIsCreatingCard] = useState(false);
     const [boardBackground, setBoardBackground] = useState<string>('bg-[#1d2125]'); // Default dark
     const [boardTitle, setBoardTitle] = useState<string>('');
 
@@ -62,10 +64,13 @@ export const useBoardData = (boardId: number | string) => {
 
     const createList = useCallback(async (title: string) => {
         try {
+            setIsCreatingList(true);
             await apiCreateList(title, boardId);
-            refreshLists();
+            await refreshLists();
         } catch (error) {
             console.error('Error creating list:', error);
+        } finally {
+            setIsCreatingList(false);
         }
     }, [boardId, refreshLists]);
 
@@ -96,11 +101,14 @@ export const useBoardData = (boardId: number | string) => {
 
     const createCard = useCallback(async (title: string, listId: number) => {
         try {
+            setIsCreatingCard(true);
             // Using default empty options for now as UI only provides title
             await apiCreateCard(title, '', listId, {});
-            refreshLists();
+            await refreshLists();
         } catch (error) {
             console.error('Error creating card:', error);
+        } finally {
+            setIsCreatingCard(false);
         }
     }, [refreshLists]);
 
@@ -137,6 +145,8 @@ export const useBoardData = (boardId: number | string) => {
         lists,
         setLists,
         loading,
+        isCreatingList,
+        isCreatingCard,
         boardBackground,
         boardTitle,
         refreshLists,

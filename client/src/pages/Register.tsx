@@ -2,12 +2,13 @@ import { useContext, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { register } from '../services/api';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 export default function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const { setAuth, guestId } = useContext(AuthContext);
     const navigate = useNavigate();
 
@@ -20,6 +21,8 @@ export default function Register() {
             return;
         }
 
+        setIsLoading(true);
+
         try {
             const response = await register(email, password);
             setAuth(response.data.user);
@@ -30,6 +33,7 @@ export default function Register() {
             navigate('/');
         } catch (err: any) {
             setError(err.response?.data || 'Error al registrarse');
+            setIsLoading(false);
         }
     };
 
@@ -119,8 +123,19 @@ export default function Register() {
                         </div>
 
                         {/* Register Button */}
-                        <button className="w-full h-10 bg-[#0052CC] hover:bg-[#0747a6] text-white font-bold rounded-[3px] transition-colors" type="submit">
-                            Registrarse
+                        <button 
+                            disabled={isLoading}
+                            className={`w-full h-10 bg-[#0052CC] hover:bg-[#0747a6] text-white font-bold rounded-[3px] transition-all flex items-center justify-center gap-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`} 
+                            type="submit"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <LoadingSpinner size="sm" color="text-white" />
+                                    <span>Creando cuenta...</span>
+                                </>
+                            ) : (
+                                'Registrarse'
+                            )}
                         </button>
                     </form>
 
