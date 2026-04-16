@@ -80,6 +80,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
         localStorage.removeItem('user');
         setUser(null);
+        setGuestId(null);
     };
 
     return (

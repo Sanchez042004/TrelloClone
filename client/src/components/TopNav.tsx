@@ -179,7 +179,7 @@ export default function TopNav({ searchValue = '', onSearchChange, hasResults = 
                                         onClick={async () => {
                                             setIsMenuOpen(false);
                                             await logout();
-                                            navigate('/');
+                                            navigate('/login');
                                         }}
                                         className="w-full text-left px-3 py-2 text-sm text-white/80 hover:bg-white/10 hover:text-white rounded-md transition-colors flex items-center gap-2"
                                     >

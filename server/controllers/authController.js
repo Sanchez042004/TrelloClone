@@ -18,7 +18,11 @@ const register = async (req, res) => {
         });
 
         // Registration successful: clear guest token
-        res.clearCookie('guest_token');
+        res.clearCookie('guest_token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        });
 
         res.json({ user: { id: user.id, email: user.email } });
     } catch (err) {
@@ -61,10 +65,14 @@ const verify = async (req, res) => {
 };
 
 const logout = (req, res) => {
-    res.clearCookie('token');
-    // We shouldn't necessarily clear guest_token here, so on logout they return to their guest state,
-    // but typically guest tracking is dropped once registered. For this implementation we'll clear both to be safe.
-    res.clearCookie('guest_token');
+    const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+    };
+
+    res.clearCookie('token', cookieOptions);
+    res.clearCookie('guest_token', cookieOptions);
     res.json({ message: 'Logged out successfully' });
 };
 
