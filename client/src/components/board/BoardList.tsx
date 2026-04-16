@@ -37,6 +37,7 @@ export default memo(function BoardList({
     const [isListActionsOpen, setIsListActionsOpen] = useState(false);
     const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
     const [listActionsPosition, setListActionsPosition] = useState({ top: 0, left: 0 });
+    const [isDeleting, setIsDeleting] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const addCardContainerRef = useRef<HTMLDivElement>(null);
     const listActionsRef = useRef<HTMLDivElement>(null);
@@ -170,13 +171,22 @@ export default memo(function BoardList({
                                      Se eliminará esta lista y todas sus tarjetas. Esta acción no se puede deshacer.
                                  </p>
                                  <button
-                                     onClick={() => {
-                                         onDeleteList(list.id);
-                                         setIsListActionsOpen(false);
+                                     onClick={async () => {
+                                         try {
+                                             setIsDeleting(true);
+                                             await onDeleteList(list.id);
+                                             setIsListActionsOpen(false);
+                                         } catch (error) {
+                                             console.error('Error deleting list:', error);
+                                         } finally {
+                                             setIsDeleting(false);
+                                         }
                                      }}
-                                     className="w-full bg-[#f87168] hover:bg-[#ff8a82] text-[#1d2125] font-semibold text-[14px] px-3 py-2 rounded-[3px] transition-colors"
+                                     disabled={isDeleting}
+                                     className="w-full h-9 flex items-center justify-center gap-2 bg-[#f87168] hover:bg-[#ff8a82] text-[#1d2125] font-semibold text-[14px] px-3 py-2 rounded-[3px] transition-colors disabled:opacity-50"
                                  >
-                                     Eliminar
+                                     {isDeleting && <LoadingSpinner size="sm" color="text-[#1d2125]" />}
+                                     {isDeleting ? 'Eliminando...' : 'Eliminar'}
                                  </button>
                              </div>
                         </>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { getBoards, createBoard, deleteBoard } from '../services/api';
 import Skeleton from '../components/ui/Skeleton';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 import Sidebar from '../components/Sidebar';
 import CreateBoardPopover from '../components/CreateBoardPopover';
@@ -34,6 +35,7 @@ export default function Dashboard() {
     const [boards, setBoards] = useState<Board[]>([]);
     const [isCreating, setIsCreating] = useState(false);
     const [isCreatingBoard, setIsCreatingBoard] = useState(false);
+    const [isDeletingBoard, setIsDeletingBoard] = useState(false);
     const [boardToDelete, setBoardToDelete] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -73,13 +75,16 @@ export default function Dashboard() {
     const confirmDelete = async () => {
         if (!boardToDelete) return;
         try {
+            setIsDeletingBoard(true);
             const id = boardToDelete;
+            await deleteBoard(id);
             setBoards(boards.filter(b => b.id !== id));
             setBoardToDelete(null);
-            await deleteBoard(id);
         } catch (error) {
             console.error('Error deleting board:', error);
             fetchBoards();
+        } finally {
+            setIsDeletingBoard(false);
         }
     };
 
@@ -230,7 +235,20 @@ export default function Dashboard() {
                         <p className="text-text-muted text-sm mb-6">El tablero se eliminará permanentemente y no podrás recuperarlo.</p>
                         <div className="flex justify-end gap-3">
                             <button onClick={() => setBoardToDelete(null)} className="px-4 py-2 rounded hover:bg-hover-dark text-text-main text-sm font-medium transition-colors">Cancelar</button>
-                            <button onClick={confirmDelete} className="px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm font-bold transition-colors">Eliminar</button>
+                            <button
+                                onClick={confirmDelete}
+                                disabled={isDeletingBoard}
+                                className="px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm font-bold transition-colors flex items-center justify-center gap-2 min-w-[100px]"
+                            >
+                                {isDeletingBoard ? (
+                                    <>
+                                        <LoadingSpinner size="sm" color="text-white" />
+                                        <span>Eliminando...</span>
+                                    </>
+                                ) : (
+                                    'Eliminar'
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>

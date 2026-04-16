@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import type { Card } from '../../types';
 import { useTags } from '../../context/TagContext';
+import LoadingSpinner from '../ui/LoadingSpinner';
 
 interface QuickEditOverlayProps {
     card: Card;
@@ -10,8 +11,6 @@ interface QuickEditOverlayProps {
     onDelete: (cardId: number) => void;
     onOpenCard: (cardId: number) => void;
 }
-
-
 
 const SIDEBAR_BUTTONS = [
     { icon: 'branding_watermark', label: 'Abrir tarjeta', action: 'open' },
@@ -28,6 +27,7 @@ export default function QuickEditOverlay({
 }: QuickEditOverlayProps) {
     const [title, setTitle] = useState(card.title);
     const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const { getTagColor } = useTags();
 
@@ -121,24 +121,35 @@ export default function QuickEditOverlay({
                         {isConfirmingDelete ? (
                             <div className="bg-[#282e33] p-3 rounded-xl border border-white/10 shadow-[0_12px_24px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in zoom-in-95 slide-in-from-left-2 duration-150 flex flex-col gap-2">
                                 <div className="flex justify-between items-center mb-1">
-                                    <button onClick={() => setIsConfirmingDelete(false)} className="text-white/40 hover:text-white p-1 -ml-1 rounded">
+                                    <button onClick={() => setIsConfirmingDelete(false)} disabled={isDeleting} className="text-white/40 hover:text-white p-1 -ml-1 rounded">
                                         <span className="material-icons-outlined text-[16px]">chevron_left</span>
                                     </button>
                                     <span className="text-[14px] font-semibold text-center text-white/80">Eliminar tarjeta</span>
-                                    <div className="w-5" /> {/* spacer for center alignment */}
+                                    <button onClick={onClose} disabled={isDeleting} className="text-white/40 hover:text-white p-1 -mr-1 rounded">
+                                        <span className="material-icons-outlined text-[16px]">close</span>
+                                    </button>
                                 </div>
                                 <div className="h-px bg-white/10 -mx-3 mb-1" />
                                 <p className="text-[14px] text-white/80 leading-relaxed font-medium mb-1 mt-1">
                                     Se eliminará esta tarjeta y todo su contenido. Esta acción no se puede deshacer.
                                 </p>
                                 <button
-                                    onClick={() => {
-                                        onDelete(card.id);
-                                        onClose();
+                                    onClick={async () => {
+                                        try {
+                                            setIsDeleting(true);
+                                            await onDelete(card.id);
+                                            onClose();
+                                        } catch (error) {
+                                            console.error('Error deleting card:', error);
+                                        } finally {
+                                            setIsDeleting(false);
+                                        }
                                     }}
-                                    className="w-full bg-[#f87168] hover:bg-[#ff8a82] text-[#1d2125] font-semibold text-[13px] px-3 py-2 rounded-[3px] transition-colors mt-2"
+                                    disabled={isDeleting}
+                                    className="w-full h-10 flex items-center justify-center gap-2 bg-[#f87168] hover:bg-[#ff8a82] text-[#1d2125] font-semibold text-[13px] px-3 py-2 rounded-[3px] transition-colors mt-2 disabled:opacity-50"
                                 >
-                                    Eliminar
+                                    {isDeleting && <LoadingSpinner size="sm" color="text-[#1d2125]" />}
+                                    {isDeleting ? 'Eliminando...' : 'Eliminar'}
                                 </button>
                             </div>
                         ) : (
