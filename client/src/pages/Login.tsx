@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { login } from '../services/api';
@@ -13,7 +13,7 @@ export default function Login() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        document.title = 'Iniciar sesión | Trello Clone';
+        document.title = 'Iniciar sesión';
         return () => { document.title = 'Trello Clone'; };
     }, []);
 
@@ -39,9 +39,9 @@ export default function Login() {
                 <div className="flex flex-col items-center mb-8">
                     {/* Logo area */}
                     <Link to="/" className="mb-4">
-                        <img 
-                            src="/Logo Trello Clone.png" 
-                            alt="Trello Clone Logo" 
+                        <img
+                            src="/Logo Trello Clone.png"
+                            alt="Trello Clone Logo"
                             className="h-12 w-auto object-contain select-none"
                             draggable="false"
                         />
@@ -93,9 +93,9 @@ export default function Login() {
                         </div>
 
                         {/* Login Button */}
-                        <button 
+                        <button
                             disabled={isLoading}
-                            className={`w-full h-10 bg-[#0052CC] hover:bg-[#0747a6] text-white font-bold rounded-[3px] transition-all flex items-center justify-center gap-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`} 
+                            className={`w-full h-10 bg-[#0052CC] hover:bg-[#0747a6] text-white font-bold rounded-[3px] transition-all flex items-center justify-center gap-2 ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
                             type="submit"
                         >
                             {isLoading ? (

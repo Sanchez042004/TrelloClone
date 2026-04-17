@@ -61,15 +61,8 @@ export default function BoardView() {
     }, [isAddingList]);
 
     useEffect(() => {
-        if (boardTitle) {
-            document.title = `${boardTitle}`;
-        } else {
-            document.title = 'Cargando...';
-        }
-        // Restore default on unmount
-        return () => {
-            document.title = 'Trello Clone';
-        };
+        document.title = boardTitle || 'Cargando...';
+        return () => { document.title = 'Trello Clone'; };
     }, [boardTitle]);
 
     useEffect(() => {

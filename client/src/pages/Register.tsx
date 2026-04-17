@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { register } from '../services/api';
@@ -14,7 +14,7 @@ export default function Register() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        document.title = 'Registrarse | Trello Clone';
+        document.title = 'Registrarse';
         return () => { document.title = 'Trello Clone'; };
     }, []);
 

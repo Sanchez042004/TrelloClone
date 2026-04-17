@@ -42,12 +42,7 @@ export default function Dashboard() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        document.title = 'Tableros | Trello Clone';
-        return () => { document.title = 'Trello Clone'; };
-    }, []);
-
-    useEffect(() => {
-        document.title = 'Iniciar sesión | Trello Clone';
+        document.title = 'Trello Clone';
         return () => { document.title = 'Trello Clone'; };
     }, []);
 
@@ -105,14 +100,14 @@ export default function Dashboard() {
 
     return (
         <div className="flex flex-col h-screen overflow-hidden bg-background-dark text-text-main font-sans">
-            <TopNav 
-                searchValue={searchQuery} 
-                onSearchChange={setSearchQuery} 
-                hasResults={filteredBoards.length > 0} 
+            <TopNav
+                searchValue={searchQuery}
+                onSearchChange={setSearchQuery}
+                hasResults={filteredBoards.length > 0}
                 results={filteredBoards.map(b => ({ ...b, type: 'board' }))}
                 placeholder="Buscar tableros"
             />
-            
+
             <div className="flex flex-1 overflow-hidden">
                 <Sidebar />
 
@@ -215,32 +210,32 @@ export default function Dashboard() {
                     </div>
                 </main>
 
-            {/* Delete Modal */}
-            {boardToDelete !== null && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-card-dark w-full max-w-sm rounded-lg shadow-2xl p-6 border border-border-dark animate-in zoom-in-95 duration-200">
-                        <h3 className="text-lg font-bold text-text-main mb-2">¿Eliminar tablero?</h3>
-                        <p className="text-text-muted text-sm mb-6">El tablero se eliminará permanentemente y no podrás recuperarlo.</p>
-                        <div className="flex justify-end gap-3">
-                            <button onClick={() => setBoardToDelete(null)} className="px-4 py-2 rounded hover:bg-hover-dark text-text-main text-sm font-medium transition-colors">Cancelar</button>
-                            <button
-                                onClick={confirmDelete}
-                                disabled={isDeletingBoard}
-                                className="px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm font-bold transition-colors flex items-center justify-center gap-2 min-w-[100px]"
-                            >
-                                {isDeletingBoard ? (
-                                    <>
-                                        <LoadingSpinner size="sm" color="text-white" />
-                                        <span>Eliminando...</span>
-                                    </>
-                                ) : (
-                                    'Eliminar'
-                                )}
-                            </button>
+                {/* Delete Modal */}
+                {boardToDelete !== null && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                        <div className="bg-card-dark w-full max-w-sm rounded-lg shadow-2xl p-6 border border-border-dark animate-in zoom-in-95 duration-200">
+                            <h3 className="text-lg font-bold text-text-main mb-2">¿Eliminar tablero?</h3>
+                            <p className="text-text-muted text-sm mb-6">El tablero se eliminará permanentemente y no podrás recuperarlo.</p>
+                            <div className="flex justify-end gap-3">
+                                <button onClick={() => setBoardToDelete(null)} className="px-4 py-2 rounded hover:bg-hover-dark text-text-main text-sm font-medium transition-colors">Cancelar</button>
+                                <button
+                                    onClick={confirmDelete}
+                                    disabled={isDeletingBoard}
+                                    className="px-4 py-2 rounded bg-red-600 hover:bg-red-500 text-white text-sm font-bold transition-colors flex items-center justify-center gap-2 min-w-[100px]"
+                                >
+                                    {isDeletingBoard ? (
+                                        <>
+                                            <LoadingSpinner size="sm" color="text-white" />
+                                            <span>Eliminando...</span>
+                                        </>
+                                    ) : (
+                                        'Eliminar'
+                                    )}
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                )}
             </div>
         </div>
     );
