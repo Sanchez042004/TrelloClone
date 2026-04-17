@@ -113,11 +113,19 @@ export const useBoardData = (boardId: number | string) => {
     }, [refreshLists]);
 
     const updateCard = useCallback(async (cardId: number, updates: any) => {
+        // Optimistic update
+        setLists(prevLists => prevLists.map(list => ({
+            ...list,
+            cards: list.cards.map(card => 
+                card.id === cardId ? { ...card, ...updates } : card
+            )
+        })));
+
         try {
             await apiUpdateCard(cardId, updates);
-            refreshLists();
         } catch (error) {
             console.error('Error updating card:', error);
+            refreshLists(); // Revert on error
         }
     }, [refreshLists]);
 

@@ -70,13 +70,6 @@ export const BoardCardContent = memo(function BoardCardContent({
         onUpdate(card.id, { is_completed: !card.is_completed });
     };
 
-    const handleDelete = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        if (window.confirm('¿Estás seguro de que quieres eliminar esta tarjeta?')) {
-            onDelete(card.id);
-        }
-    };
-
     return (
         <div
             ref={provided?.innerRef}
@@ -85,7 +78,7 @@ export const BoardCardContent = memo(function BoardCardContent({
             onClick={(e) => onEdit(e, card)}
             onMouseEnter={(e) => onHover(e, card)}
             onMouseLeave={() => onLeave()}
-            className={`group relative glass-card p-2.5 rounded-xl border border-white/5 cursor-pointer ${cardHoverClass} ${isDragging
+            className={`group relative glass-card p-2.5 rounded-xl border border-white/5 cursor-default ${cardHoverClass} ${isDragging
                 ? 'shadow-2xl opacity-80'
                 : 'transition-[transform,box-shadow,background-color,border-color] duration-300 active:scale-[0.98]'
                 }`}
@@ -110,7 +103,7 @@ export const BoardCardContent = memo(function BoardCardContent({
             <div className={`flex items-start ${card.is_completed ? 'opacity-60' : ''}`}>
                 <div 
                     onClick={handleToggleComplete}
-                    className={`${indicatorHoverWidth} overflow-hidden transition-all duration-300 ease-in-out flex items-center shrink-0 group/indicator self-center relative`}
+                    className={`${indicatorHoverWidth} overflow-hidden transition-all duration-300 ease-in-out flex items-center shrink-0 group/indicator self-center relative cursor-pointer`}
                 >
                     <span className={`material-symbols-outlined text-[18px] transition-all duration-300 ${indicatorHoverOpacity} ${card.is_completed ? 'text-[#4bce97] fill-1' : 'text-white/40 hover:text-white'}`}>
                         {card.is_completed ? 'check_circle' : 'radio_button_unchecked'}
@@ -128,17 +121,8 @@ export const BoardCardContent = memo(function BoardCardContent({
 
             <div className={`absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5 ${buttonHoverOpacity}`}>
                 <button
-                    onClick={handleDelete}
-                    className="group/del-btn size-7 flex items-center justify-center rounded-lg hover:bg-red-500/20 text-white/40 hover:text-red-400 transition-all duration-200 relative"
-                >
-                    <span className="material-symbols-outlined text-[16px]">delete</span>
-                    <div className="absolute top-1/2 -translate-y-1/2 right-10 px-2 py-1 bg-white text-[#1d2125] text-[10px] rounded-lg hidden group-hover/del-btn:flex items-center whitespace-nowrap shadow-2xl pointer-events-none z-[100] border border-black/10 animate-in fade-in zoom-in-95 slide-in-from-right-1 duration-100 origin-right">
-                        <span className="font-bold">Eliminar</span>
-                    </div>
-                </button>
-                <button
                     onClick={(e) => onQuickEdit(e, card)}
-                    className="group/edit-btn size-7 flex items-center justify-center rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all duration-200 relative"
+                    className="group/edit-btn size-7 flex items-center justify-center rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all duration-200 relative cursor-pointer"
                 >
                     <span className="material-symbols-outlined text-[16px]">edit_square</span>
                     <div className="absolute top-1/2 -translate-y-1/2 right-10 px-2 py-1 bg-white text-[#1d2125] text-[10px] rounded-lg hidden group-hover/edit-btn:flex items-center gap-2 whitespace-nowrap shadow-2xl pointer-events-none z-[100] border border-black/10 animate-in fade-in zoom-in-95 slide-in-from-right-1 duration-100 origin-right">

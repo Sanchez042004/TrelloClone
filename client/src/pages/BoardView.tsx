@@ -258,7 +258,7 @@ export default function BoardView() {
                         />
                     ) : (
                         <h1 onClick={() => { setTempTitle(boardTitle); setIsEditingTitle(true); }} className="text-lg font-bold px-2 py-1 rounded hover:bg-white/20 cursor-pointer transition-colors">
-                            {boardTitle || 'Cargando...'}
+                            {boardTitle || 'Trello Clone'}
                         </h1>
                     )}
                 </div>
