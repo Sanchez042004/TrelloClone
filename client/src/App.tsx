@@ -9,6 +9,7 @@ import './index.css';
 
 import { useContext } from 'react';
 import LoadingSpinner from './components/ui/LoadingSpinner';
+import MobileWarning from './components/ui/MobileWarning';
 
 function AppContent() {
     const { loading } = useContext(AuthContext);
@@ -38,6 +39,7 @@ function App() {
     return (
         <AuthProvider>
             <TagProvider>
+                <MobileWarning />
                 <AppContent />
             </TagProvider>
         </AuthProvider>
