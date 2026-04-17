@@ -12,6 +12,11 @@ export default function Login() {
     const { setAuth } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        document.title = 'Iniciar sesión | Trello Clone';
+        return () => { document.title = 'Trello Clone'; };
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');

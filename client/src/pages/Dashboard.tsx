@@ -42,6 +42,16 @@ export default function Dashboard() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        document.title = 'Tableros | Trello Clone';
+        return () => { document.title = 'Trello Clone'; };
+    }, []);
+
+    useEffect(() => {
+        document.title = 'Iniciar sesión | Trello Clone';
+        return () => { document.title = 'Trello Clone'; };
+    }, []);
+
+    useEffect(() => {
         if (!authLoading) {
             fetchBoards();
         }

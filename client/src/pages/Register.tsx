@@ -13,6 +13,11 @@ export default function Register() {
     const { setAuth, guestId } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        document.title = 'Registrarse | Trello Clone';
+        return () => { document.title = 'Trello Clone'; };
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');

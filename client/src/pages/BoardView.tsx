@@ -61,6 +61,18 @@ export default function BoardView() {
     }, [isAddingList]);
 
     useEffect(() => {
+        if (boardTitle) {
+            document.title = `${boardTitle}`;
+        } else {
+            document.title = 'Cargando...';
+        }
+        // Restore default on unmount
+        return () => {
+            document.title = 'Trello Clone';
+        };
+    }, [boardTitle]);
+
+    useEffect(() => {
         if (boardId) {
             refreshLists();
             fetchBoardData();
@@ -131,7 +143,7 @@ export default function BoardView() {
         const handleKeyDown = (e: KeyboardEvent) => {
             // Only trigger if E is pressed without modifiers
             if (e.key.toLowerCase() !== 'e' || e.ctrlKey || e.metaKey || e.altKey) return;
-            
+
             // Don't trigger if any modal/overlay is already open
             if (editingCard || quickEditingCard) return;
 
@@ -219,7 +231,7 @@ export default function BoardView() {
         );
     }
 
-    const filteredCards = searchQuery.trim() === '' ? [] : lists.flatMap(list => 
+    const filteredCards = searchQuery.trim() === '' ? [] : lists.flatMap(list =>
         list.cards
             .filter(card => {
                 const query = searchQuery.toLowerCase();
@@ -236,10 +248,10 @@ export default function BoardView() {
 
     return (
         <div className={`flex flex-col h-screen text-text-main ${bgProps.className || ''}`} style={bgProps.style}>
-            <TopNav 
+            <TopNav
                 searchValue={searchQuery} onSearchChange={setSearchQuery}
                 hasResults={filteredCards.length > 0}
-                results={filteredCards} 
+                results={filteredCards}
                 placeholder="Buscar tarjetas"
             />
 
@@ -274,7 +286,7 @@ export default function BoardView() {
                         <div className="w-64 shrink-0">
                             {isAddingList ? (
                                 <div ref={addListContainerRef} className="bg-[#101204] p-2 rounded-xl border border-white/10">
-                                    <input 
+                                    <input
                                         autoFocus className="w-full bg-[#22272b] text-white text-[14px] border border-[#579dff] rounded-[3px] p-2 py-1.5 mb-2 outline-none"
                                         placeholder="Introduce el nombre de la lista..."
                                         value={newListTitle} onChange={(e) => setNewListTitle(e.target.value)}
