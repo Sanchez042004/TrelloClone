@@ -221,7 +221,10 @@ export default function BoardView() {
 
     const filteredCards = searchQuery.trim() === '' ? [] : lists.flatMap(list => 
         list.cards
-            .filter(card => card.title.toLowerCase().includes(searchQuery.toLowerCase()))
+            .filter(card => {
+                const query = searchQuery.toLowerCase();
+                return card.title.toLowerCase().split(/\s+/).some(word => word.startsWith(query));
+            })
             .map(card => ({
                 id: card.id,
                 title: card.title,
