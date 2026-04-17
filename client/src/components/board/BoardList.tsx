@@ -12,6 +12,8 @@ interface BoardListProps {
     onCreateCard: (title: string, listId: number) => void;
     onEditCard: (e: React.MouseEvent, card: Card) => void;
     onQuickEditCard: (e: React.MouseEvent, card: Card) => void;
+    onUpdateCard: (cardId: number, updates: Partial<Card>) => void;
+    onDeleteCard: (cardId: number) => void;
     onHoverCard: (e: React.MouseEvent, card: Card) => void;
     onLeaveCard: () => void;
     isGlobalDragging: boolean;
@@ -25,6 +27,8 @@ export default memo(function BoardList({
     onCreateCard,
     onEditCard,
     onQuickEditCard,
+    onUpdateCard,
+    onDeleteCard,
     onHoverCard,
     onLeaveCard,
     isGlobalDragging,
@@ -244,6 +248,8 @@ export default memo(function BoardList({
                             isDragging={snapshot.isDragging}
                             onEdit={onEditCard}
                             onQuickEdit={onQuickEditCard}
+                            onUpdate={onUpdateCard}
+                            onDelete={onDeleteCard}
                             onHover={onHoverCard}
                             onLeave={onLeaveCard}
                             provided={provided}
@@ -276,6 +282,8 @@ export default memo(function BoardList({
                                 index={index}
                                 onEdit={onEditCard}
                                 onQuickEdit={onQuickEditCard}
+                                onUpdate={onUpdateCard}
+                                onDelete={onDeleteCard}
                                 onHover={onHoverCard}
                                 onLeave={onLeaveCard}
                                 isGlobalDragging={isGlobalDragging}

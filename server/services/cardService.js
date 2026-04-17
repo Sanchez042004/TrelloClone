@@ -127,6 +127,7 @@ const updateCard = async (id, cardData) => {
         if (cardData.image_url !== undefined) updateData.image_url = cardData.image_url;
         if (cardData.priority !== undefined) updateData.priority = cardData.priority;
         if (cardData.label !== undefined) updateData.label = cardData.label;
+        if (cardData.is_completed !== undefined) updateData.is_completed = cardData.is_completed;
 
         await tx.cards.update({
             where: { id: cardId },

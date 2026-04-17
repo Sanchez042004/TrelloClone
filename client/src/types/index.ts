@@ -13,6 +13,7 @@ export interface Card {
     image_url?: string;
     label?: string;
     priority?: string;
+    is_completed?: boolean;
     tags?: Tag[];
 }
 

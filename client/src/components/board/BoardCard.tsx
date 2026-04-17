@@ -8,6 +8,8 @@ interface BoardCardProps {
     index: number;
     onEdit: (e: React.MouseEvent, card: Card) => void;
     onQuickEdit: (e: React.MouseEvent, card: Card) => void;
+    onUpdate: (cardId: number, updates: Partial<Card>) => void;
+    onDelete: (cardId: number) => void;
     onHover: (e: React.MouseEvent, card: Card) => void;
     onLeave: () => void;
     isGlobalDragging?: boolean;
@@ -35,6 +37,8 @@ export const BoardCardContent = memo(function BoardCardContent({
     card,
     onEdit,
     onQuickEdit,
+    onUpdate,
+    onDelete,
     onHover,
     onLeave,
     isDragging,
@@ -45,6 +49,8 @@ export const BoardCardContent = memo(function BoardCardContent({
     card: Card;
     onEdit: (e: React.MouseEvent, card: Card) => void;
     onQuickEdit: (e: React.MouseEvent, card: Card) => void;
+    onUpdate: (cardId: number, updates: Partial<Card>) => void;
+    onDelete: (cardId: number) => void;
     onHover: (e: React.MouseEvent, card: Card) => void;
     onLeave: () => void;
     isDragging: boolean;
@@ -56,8 +62,20 @@ export const BoardCardContent = memo(function BoardCardContent({
     // Dynamic classes: when dragging globally, disable all hover effects on static cards
     const cardHoverClass = isGlobalDragging ? '' : 'hover:bg-white/10 hover:shadow-2xl hover:border-white/10';
     const buttonHoverOpacity = isGlobalDragging ? 'opacity-0' : 'opacity-0 group-hover:opacity-100';
-    const indicatorHoverWidth = isGlobalDragging ? 'w-0' : 'w-0 group-hover:w-6';
-    const indicatorHoverOpacity = isGlobalDragging ? 'opacity-0' : 'opacity-0 group-hover:opacity-100';
+    const indicatorHoverWidth = isGlobalDragging ? (card.is_completed ? 'w-6' : 'w-0') : (card.is_completed ? 'w-6' : 'w-0 group-hover:w-6');
+    const indicatorHoverOpacity = isGlobalDragging ? (card.is_completed ? 'opacity-100' : 'opacity-0') : (card.is_completed ? 'opacity-100' : 'opacity-0 group-hover:opacity-100');
+
+    const handleToggleComplete = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        onUpdate(card.id, { is_completed: !card.is_completed });
+    };
+
+    const handleDelete = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (window.confirm('¿Estás seguro de que quieres eliminar esta tarjeta?')) {
+            onDelete(card.id);
+        }
+    };
 
     return (
         <div
@@ -89,24 +107,46 @@ export const BoardCardContent = memo(function BoardCardContent({
                     </div>
                 );
             })()}
-            <div className="flex items-center">
-                <div className={`${indicatorHoverWidth} overflow-hidden transition-all duration-300 ease-in-out flex items-center shrink-0`}>
-                    <span className={`material-symbols-outlined text-[16px] text-white/40 transition-opacity duration-300 ${indicatorHoverOpacity}`}>radio_button_unchecked</span>
+            <div className={`flex items-start ${card.is_completed ? 'opacity-60' : ''}`}>
+                <div 
+                    onClick={handleToggleComplete}
+                    className={`${indicatorHoverWidth} overflow-hidden transition-all duration-300 ease-in-out flex items-center shrink-0 group/indicator self-center relative`}
+                >
+                    <span className={`material-symbols-outlined text-[18px] transition-all duration-300 ${indicatorHoverOpacity} ${card.is_completed ? 'text-[#4bce97] fill-1' : 'text-white/40 hover:text-white'}`}>
+                        {card.is_completed ? 'check_circle' : 'radio_button_unchecked'}
+                    </span>
+                    
+                    {/* Indicator Tooltip */}
+                    <div className="absolute left-6 top-1/2 -translate-y-1/2 px-2 py-1 bg-white text-[#1d2125] text-[10px] font-bold rounded-lg hidden group-hover/indicator:flex items-center whitespace-nowrap shadow-2xl pointer-events-none z-[100] border border-black/10 animate-in fade-in zoom-in-95 duration-100 origin-left">
+                        {card.is_completed ? 'Marcar como incompleta' : 'Marcar como completada'}
+                    </div>
                 </div>
-                <h4 className="text-[13px] font-medium text-white tracking-tight leading-tight flex-1 pr-6 transition-colors">{card.title}</h4>
+                <h4 className={`text-[13px] font-medium text-white tracking-tight leading-tight flex-1 transition-all duration-300 ${card.is_completed ? 'line-through text-white/50' : ''}`}>
+                    {card.title}
+                </h4>
             </div>
-            <button
-                onClick={(e) => onQuickEdit(e, card)}
-                className={`group/edit-btn absolute right-1 top-1/2 -translate-y-1/2 size-7 flex items-center justify-center rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all duration-200 z-[40] ${buttonHoverOpacity}`}
-            >
-                <span className="material-symbols-outlined text-[16px]">edit_square</span>
 
-                {/* Custom Tooltip */}
-                <div className="absolute top-1/2 -translate-y-1/2 right-10 px-2 py-1 bg-white text-[#1d2125] text-[10px] rounded-lg hidden group-hover/edit-btn:flex items-center gap-2 whitespace-nowrap shadow-2xl pointer-events-none z-[100] border border-black/10 animate-in fade-in zoom-in-95 slide-in-from-right-1 duration-100 origin-right">
-                    <span className="font-bold">Editar rápida</span>
-                    <span className="bg-gray-200 px-1 py-0.5 rounded text-[9px] font-black uppercase">e</span>
-                </div>
-            </button>
+            <div className={`absolute right-1 top-1/2 -translate-y-1/2 flex items-center gap-0.5 ${buttonHoverOpacity}`}>
+                <button
+                    onClick={handleDelete}
+                    className="group/del-btn size-7 flex items-center justify-center rounded-lg hover:bg-red-500/20 text-white/40 hover:text-red-400 transition-all duration-200 relative"
+                >
+                    <span className="material-symbols-outlined text-[16px]">delete</span>
+                    <div className="absolute top-1/2 -translate-y-1/2 right-10 px-2 py-1 bg-white text-[#1d2125] text-[10px] rounded-lg hidden group-hover/del-btn:flex items-center whitespace-nowrap shadow-2xl pointer-events-none z-[100] border border-black/10 animate-in fade-in zoom-in-95 slide-in-from-right-1 duration-100 origin-right">
+                        <span className="font-bold">Eliminar</span>
+                    </div>
+                </button>
+                <button
+                    onClick={(e) => onQuickEdit(e, card)}
+                    className="group/edit-btn size-7 flex items-center justify-center rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all duration-200 relative"
+                >
+                    <span className="material-symbols-outlined text-[16px]">edit_square</span>
+                    <div className="absolute top-1/2 -translate-y-1/2 right-10 px-2 py-1 bg-white text-[#1d2125] text-[10px] rounded-lg hidden group-hover/edit-btn:flex items-center gap-2 whitespace-nowrap shadow-2xl pointer-events-none z-[100] border border-black/10 animate-in fade-in zoom-in-95 slide-in-from-right-1 duration-100 origin-right">
+                        <span className="font-bold">Editar rápida</span>
+                        <span className="bg-gray-200 px-1 py-0.5 rounded text-[9px] font-black uppercase">e</span>
+                    </div>
+                </button>
+            </div>
 
             {(card.priority || hasTextContent(card.description)) && (
                 <div className="mt-2 flex items-center gap-2 text-white/50">
@@ -126,7 +166,7 @@ export const BoardCardContent = memo(function BoardCardContent({
     );
 });
 
-export default memo(function BoardCard({ card, index, onEdit, onQuickEdit, onHover, onLeave, isGlobalDragging }: BoardCardProps) {
+export default memo(function BoardCard({ card, index, onEdit, onQuickEdit, onUpdate, onDelete, onHover, onLeave, isGlobalDragging }: BoardCardProps) {
     return (
         <Draggable draggableId={card.id.toString()} index={index}>
             {(provided, snapshot) => (
@@ -134,6 +174,8 @@ export default memo(function BoardCard({ card, index, onEdit, onQuickEdit, onHov
                     card={card}
                     onEdit={onEdit}
                     onQuickEdit={onQuickEdit}
+                    onUpdate={onUpdate}
+                    onDelete={onDelete}
                     onHover={onHover}
                     onLeave={onLeave}
                     isDragging={snapshot.isDragging}

@@ -271,6 +271,7 @@ export default function BoardView() {
                             <BoardList
                                 key={list.id} list={list} onDeleteList={deleteList} onUpdateTitle={updateListTitle}
                                 onCreateCard={createCard} onEditCard={handleEditCard} onQuickEditCard={handleStartQuickEdit}
+                                onUpdateCard={updateCard} onDeleteCard={deleteCard}
                                 onHoverCard={handleHoverCard} onLeaveCard={handleLeaveCard} isGlobalDragging={isGlobalDragging}
                                 isCreatingCard={isCreatingCard}
                             />
