@@ -9,7 +9,6 @@ interface BoardCardProps {
     onEdit: (e: React.MouseEvent, card: Card) => void;
     onQuickEdit: (e: React.MouseEvent, card: Card) => void;
     onUpdate: (cardId: number, updates: Partial<Card>) => void;
-    onDelete: (cardId: number) => void;
     onHover: (e: React.MouseEvent, card: Card) => void;
     onLeave: () => void;
     isGlobalDragging?: boolean;
@@ -38,7 +37,6 @@ export const BoardCardContent = memo(function BoardCardContent({
     onEdit,
     onQuickEdit,
     onUpdate,
-    onDelete,
     onHover,
     onLeave,
     isDragging,
@@ -50,7 +48,6 @@ export const BoardCardContent = memo(function BoardCardContent({
     onEdit: (e: React.MouseEvent, card: Card) => void;
     onQuickEdit: (e: React.MouseEvent, card: Card) => void;
     onUpdate: (cardId: number, updates: Partial<Card>) => void;
-    onDelete: (cardId: number) => void;
     onHover: (e: React.MouseEvent, card: Card) => void;
     onLeave: () => void;
     isDragging: boolean;
@@ -150,7 +147,7 @@ export const BoardCardContent = memo(function BoardCardContent({
     );
 });
 
-export default memo(function BoardCard({ card, index, onEdit, onQuickEdit, onUpdate, onDelete, onHover, onLeave, isGlobalDragging }: BoardCardProps) {
+export default memo(function BoardCard({ card, index, onEdit, onQuickEdit, onUpdate, onHover, onLeave, isGlobalDragging }: BoardCardProps) {
     return (
         <Draggable draggableId={card.id.toString()} index={index}>
             {(provided, snapshot) => (
@@ -159,7 +156,6 @@ export default memo(function BoardCard({ card, index, onEdit, onQuickEdit, onUpd
                     onEdit={onEdit}
                     onQuickEdit={onQuickEdit}
                     onUpdate={onUpdate}
-                    onDelete={onDelete}
                     onHover={onHover}
                     onLeave={onLeave}
                     isDragging={snapshot.isDragging}
