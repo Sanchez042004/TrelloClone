@@ -33,13 +33,14 @@ export default function Login() {
             <div className="relative z-10 w-full max-w-md px-6 py-12">
                 <div className="flex flex-col items-center mb-8">
                     {/* Logo area */}
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 bg-[#0052CC] rounded-[4px] p-[4px] flex gap-[2px]">
-                            <div className="flex-1 bg-[#1d2125] rounded-[2px] h-[80%]"></div>
-                            <div className="flex-1 bg-[#1d2125] rounded-[2px]"></div>
-                        </div>
-                        <h1 className="text-3xl font-bold tracking-tight text-white">TaskFlow</h1>
-                    </div>
+                    <Link to="/" className="mb-4">
+                        <img 
+                            src="/Logo Trello Clone.png" 
+                            alt="Trello Clone Logo" 
+                            className="h-12 w-auto object-contain select-none"
+                            draggable="false"
+                        />
+                    </Link>
                     <p className="text-slate-300 font-medium">Inicia sesión para continuar</p>
                 </div>
 

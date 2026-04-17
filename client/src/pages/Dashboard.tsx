@@ -132,28 +132,6 @@ export default function Dashboard() {
                     )}
 
                     <h1 className="text-xl font-bold text-text-main mb-4">Tableros</h1>
-                    <div className="flex flex-col sm:flex-row justify-between items-end gap-4 mb-6">
-                        <div className="flex flex-wrap gap-4 opacity-40">
-                            <div className="flex flex-col gap-1">
-                                <label className="text-xs font-bold text-text-main px-1">Ordenar por</label>
-                                <div className="relative">
-                                    <select disabled className="appearance-none bg-[#242528] border-[0.5px] border-[#3e474f]/50 rounded-[4px] px-3 py-2 pr-9 text-[14px] text-text-main w-[220px] outline-none cursor-default transition-all">
-                                        <option>Más activo reciente...</option>
-                                    </select>
-                                    <span className="material-symbols-outlined absolute right-2 top-2.5 pointer-events-none text-[#9fadbc] text-[18px]">expand_more</span>
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <label className="text-xs font-bold text-text-main px-1">Filtrar por</label>
-                                <div className="relative">
-                                    <select disabled className="appearance-none bg-[#242528] border-[0.5px] border-[#3e474f]/50 rounded-[4px] px-3 py-2 pr-9 text-[14px] text-text-main w-[220px] outline-none cursor-default transition-all">
-                                        <option>Elegir una colección</option>
-                                    </select>
-                                    <span className="material-symbols-outlined absolute right-2 top-2.5 pointer-events-none text-[#9fadbc] text-[18px]">expand_more</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     {/* Boards Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

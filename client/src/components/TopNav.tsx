@@ -63,14 +63,18 @@ export default function TopNav({ searchValue = '', onSearchChange, hasResults = 
     }, [onSearchChange, searchValue]); // Added searchValue to track current query state
 
     return (
-        <nav className="bg-[#1F1F21] border-b border-white/10 px-4 h-12 flex items-center justify-between text-white shrink-0 z-50">
+        <nav className="bg-[#1F1F21] border-b border-white/10 px-3 h-12 flex items-center justify-between text-white shrink-0 z-50">
             <div className="flex items-center gap-4">
-                <div onClick={() => navigate('/')} className="flex items-center gap-2 cursor-pointer group">
-                    <div className="w-5 h-5 bg-[#9facbd] rounded-[3px] p-[2.5px] flex gap-[1.5px]">
-                        <div className="flex-1 bg-[#1d2125] rounded-[1px] h-[80%]"></div>
-                        <div className="flex-1 bg-[#1d2125] rounded-[1px]"></div>
-                    </div>
-                    <span className="font-bold text-lg text-[#9facbd] tracking-tight">TaskFlow</span>
+                <div 
+                    onClick={() => navigate('/')} 
+                    className="flex items-center gap-2 cursor-pointer group hover:bg-white/10 transition-colors rounded-[3px] px-1.5 py-1 ml-0"
+                >
+                    <img 
+                        src="/Logo Trello Clone.png" 
+                        alt="Trello Clone Logo" 
+                        className="h-[20px] w-auto object-contain select-none"
+                        draggable="false"
+                    />
                 </div>
             </div>
 

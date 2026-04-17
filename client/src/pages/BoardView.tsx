@@ -129,7 +129,13 @@ export default function BoardView() {
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key !== 'e' && e.key !== 'E') return;
+            // Only trigger if E is pressed without modifiers
+            if (e.key.toLowerCase() !== 'e' || e.ctrlKey || e.metaKey || e.altKey) return;
+            
+            // Don't trigger if any modal/overlay is already open
+            if (editingCard || quickEditingCard) return;
+
+            // Don't trigger if user is typing in an input/textarea
             const active = document.activeElement;
             if (active) {
                 const tag = active.tagName.toLowerCase();
@@ -137,14 +143,18 @@ export default function BoardView() {
                     return;
                 }
             }
-            if (editingCard || quickEditingCard) return;
+
             const hovered = hoveredCardRef.current;
-            if (!hovered) return;
+            if (!hovered || !hovered.element) return;
+
+            // If we are here, we can trigger quick edit
             e.preventDefault();
+            e.stopPropagation();
             openQuickEditForElement(hovered.card, hovered.element);
         };
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
+
+        window.addEventListener('keydown', handleKeyDown, true);
+        return () => window.removeEventListener('keydown', handleKeyDown, true);
     }, [editingCard, quickEditingCard, openQuickEditForElement]);
 
     const handleDragStart = useCallback(() => {
@@ -209,12 +219,25 @@ export default function BoardView() {
         );
     }
 
+    const filteredCards = searchQuery.trim() === '' ? [] : lists.flatMap(list => 
+        list.cards
+            .filter(card => card.title.toLowerCase().includes(searchQuery.toLowerCase()))
+            .map(card => ({
+                id: card.id,
+                title: card.title,
+                subtitle: list.title,
+                type: 'card' as const,
+                boardId: Number(boardId)
+            }))
+    );
+
     return (
         <div className={`flex flex-col h-screen text-text-main ${bgProps.className || ''}`} style={bgProps.style}>
             <TopNav 
                 searchValue={searchQuery} onSearchChange={setSearchQuery}
-                hasResults={lists.some(l => l.cards.some(c => c.title.toLowerCase().startsWith(searchQuery.toLowerCase())))}
-                results={[]} placeholder="Buscar tarjetas"
+                hasResults={filteredCards.length > 0}
+                results={filteredCards} 
+                placeholder="Buscar tarjetas"
             />
 
             <header className="glass-nav border-b border-white/10 px-4 h-12 flex items-center justify-between text-white shrink-0">

@@ -12,11 +12,18 @@ const BACKGROUNDS = [
     { type: 'image', value: 'from-purple-600 to-pink-600', label: 'Atardecer' },
     { type: 'image', value: 'from-emerald-600 to-teal-600', label: 'Naturaleza' },
     { type: 'image', value: 'from-orange-600 to-red-600', label: 'Desierto' },
+    { type: 'image', value: 'from-cyan-500 to-blue-500', label: 'Océano' },
+    { type: 'image', value: 'from-rose-500 to-orange-500', label: 'Fuego' },
+    { type: 'image', value: 'from-amber-400 to-orange-500', label: 'Sol' },
+    { type: 'image', value: 'from-lime-400 to-green-600', label: 'Bosque' },
     { type: 'color', value: 'bg-blue-600', label: 'Azul' },
     { type: 'color', value: 'bg-indigo-500', label: 'Índigo' },
     { type: 'color', value: 'bg-sky-500', label: 'Celeste' },
     { type: 'color', value: 'bg-pink-500', label: 'Rosa' },
     { type: 'color', value: 'bg-green-500', label: 'Verde' },
+    { type: 'color', value: 'bg-amber-500', label: 'Ámbar' },
+    { type: 'color', value: 'bg-red-500', label: 'Rojo' },
+    { type: 'color', value: 'bg-slate-500', label: 'Gris' },
 ];
 
 export default function CreateBoardPopover({ onClose, onCreate, loading }: CreateBoardPopoverProps) {
@@ -77,9 +84,9 @@ export default function CreateBoardPopover({ onClose, onCreate, loading }: Creat
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label className="text-xs font-bold text-text-muted mb-2 block">Fondo</label>
-                        <div className="grid grid-cols-4 gap-2 mb-2">
-                            {BACKGROUNDS.slice(0, 4).map((bg, idx) => (
-                                <button key={idx} type="button" onClick={() => setSelectedBackground(bg)} className={`h-10 rounded-sm relative overflow-hidden ${bg.type === 'color' ? bg.value : `bg-gradient-to-br ${bg.value}`}`}>
+                        <div className="grid grid-cols-4 gap-2 mb-2 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar">
+                            {BACKGROUNDS.map((bg, idx) => (
+                                <button key={idx} type="button" onClick={() => setSelectedBackground(bg)} className={`h-8 rounded-sm relative overflow-hidden transition-transform hover:scale-105 ${bg.type === 'color' ? bg.value : `bg-gradient-to-br ${bg.value}`}`}>
                                     {selectedBackground.value === bg.value && (
                                         <div className="absolute inset-0 flex items-center justify-center bg-black/20">
                                             <span className="material-symbols-outlined text-white text-[16px]">check</span>
