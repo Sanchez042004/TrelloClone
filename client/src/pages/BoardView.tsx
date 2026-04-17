@@ -61,7 +61,7 @@ export default function BoardView() {
     }, [isAddingList]);
 
     useEffect(() => {
-        document.title = boardTitle || 'Cargando...';
+        document.title = boardTitle || 'Trello Clone';
         return () => { document.title = 'Trello Clone'; };
     }, [boardTitle]);
 
