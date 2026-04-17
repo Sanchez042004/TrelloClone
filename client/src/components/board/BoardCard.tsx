@@ -78,11 +78,11 @@ export const BoardCardContent = memo(function BoardCardContent({
             onClick={(e) => onEdit(e, card)}
             onMouseEnter={(e) => onHover(e, card)}
             onMouseLeave={() => onLeave()}
-            className={`group relative glass-card p-2.5 rounded-xl border border-white/5 cursor-default ${cardHoverClass} ${isDragging
+            className={`group relative glass-card p-2.5 rounded-xl border border-white/5 cursor-pointer ${cardHoverClass} ${isDragging
                 ? 'shadow-2xl opacity-80'
                 : 'transition-[transform,box-shadow,background-color,border-color] duration-300 active:scale-[0.98]'
                 }`}
-            style={{ ...style, cursor: 'default' }}
+            style={{ ...style, cursor: 'pointer' }}
         >
             {(() => {
                 if (!card.label) return null;
@@ -167,7 +167,7 @@ export default memo(function BoardCard({ card, index, onEdit, onQuickEdit, onUpd
                     provided={provided}
                     style={{
                         ...provided.draggableProps.style,
-                        cursor: 'default',
+                        cursor: 'pointer',
                         transform: snapshot.isDragging
                             ? `${provided.draggableProps.style?.transform} rotate(3deg)`
                             : provided.draggableProps.style?.transform,
