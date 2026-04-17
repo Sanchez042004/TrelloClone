@@ -247,7 +247,6 @@ export default memo(function BoardList({
                             onEdit={onEditCard}
                             onQuickEdit={onQuickEditCard}
                             onUpdate={onUpdateCard}
-                            onDelete={onDeleteCard}
                             onHover={onHoverCard}
                             onLeave={onLeaveCard}
                             provided={provided}
