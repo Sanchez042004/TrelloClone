@@ -82,7 +82,7 @@ export const BoardCardContent = memo(function BoardCardContent({
                 ? 'shadow-2xl opacity-80'
                 : 'transition-[transform,box-shadow,background-color,border-color] duration-300 active:scale-[0.98]'
                 }`}
-            style={style || {}}
+            style={{ ...style, cursor: 'default' }}
         >
             {(() => {
                 if (!card.label) return null;
@@ -167,6 +167,7 @@ export default memo(function BoardCard({ card, index, onEdit, onQuickEdit, onUpd
                     provided={provided}
                     style={{
                         ...provided.draggableProps.style,
+                        cursor: 'default',
                         transform: snapshot.isDragging
                             ? `${provided.draggableProps.style?.transform} rotate(3deg)`
                             : provided.draggableProps.style?.transform,
