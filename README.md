@@ -9,7 +9,6 @@ A fullstack Kanban-style task manager inspired by Trello. Built as a portfolio p
 - **Data Migration** — Your guest boards are saved when you create an account
 - **Boards, Lists & Cards** — Full Kanban workflow
 - **Drag & Drop** — Reorder cards between lists
-- **Responsive** — Works on desktop and mobile
 
 ## Tech Stack
 
