@@ -46,12 +46,4 @@ PORT=5000
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/trello
 JWT_SECRET=your_secret_key_here
 ```
-
-## Future Improvements
-
-- [ ] Card due dates and labels
-- [ ] Board sharing between users
-- [ ] Real-time updates with WebSockets
-- [ ] Dark mode
-
 ---
