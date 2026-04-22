@@ -1,8 +1,8 @@
-# Trello Clone 🗂️
+# Trello Clone 
 
 A fullstack Kanban-style task manager inspired by Trello. Built as a portfolio project to practice fullstack development with React and Node.js.
 
-## ✨ Features
+## Features
 
 - **Guest Mode** — Use the app instantly, no account needed
 - **Authentication** — Optional sign up / login
@@ -11,7 +11,7 @@ A fullstack Kanban-style task manager inspired by Trello. Built as a portfolio p
 - **Drag & Drop** — Reorder cards between lists
 - **Responsive** — Works on desktop and mobile
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Frontend | Backend |
 |----------|---------|
@@ -20,7 +20,7 @@ A fullstack Kanban-style task manager inspired by Trello. Built as a portfolio p
 | Tailwind CSS | JWT Auth |
 | React Router | Docker |
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Requirements
 
@@ -47,7 +47,7 @@ DATABASE_URL=postgres://postgres:postgres@localhost:5432/trello
 JWT_SECRET=your_secret_key_here
 ```
 
-## 🔮 Future Improvements
+## Future Improvements
 
 - [ ] Card due dates and labels
 - [ ] Board sharing between users
